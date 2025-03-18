@@ -64,4 +64,4 @@ for script in tqdm(scripts, desc="Executando scripts", unit="script"):
     else:
         run_python_script(script)
 
-print("As tabelas 'notas_publicadas' e 'bilhetagem' foram atualizadas com sucesso.")
+print("As seguintes tarefas foram executadas e finalizadas: Atualizado tabelas 'notas_publicadas' e 'bilhetagem' e criado Backup do marketing_db.")
