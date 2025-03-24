@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 
-# Função para limpar a pasta de downloads
+# FunÃ§Ã£o para limpar a pasta de downloads
 def limpar_pasta(caminho):
     if os.path.exists(caminho):
         for arquivo in os.listdir(caminho):
@@ -18,22 +18,22 @@ def limpar_pasta(caminho):
                 elif os.path.isdir(caminho_arquivo):
                     shutil.rmtree(caminho_arquivo)
             except Exception as e:
-                print(f"Erro ao deletar {caminho_arquivo}. Razão: {e}")
+                print(f"Erro ao deletar {caminho_arquivo}. RazÃ£o: {e}")
     else:
-        print(f"O caminho {caminho} não existe.")
+        print(f"O caminho {caminho} nÃ£o existe.")
 
-# Função para verificar se o arquivo foi baixado
+# FunÃ§Ã£o para verificar se o arquivo foi baixado
 def arquivo_foi_baixado(caminho_downloads, extensao=".xlsx"):
     for arquivo in os.listdir(caminho_downloads):
         if arquivo.endswith(extensao):
             return True
     return False
 
-# Limpa a pasta de downloads antes de iniciar o código
+# Limpa a pasta de downloads antes de iniciar o cÃ³digo
 caminho_downloads = r"C:\Users\geraldo.junior\Downloads"
 limpar_pasta(caminho_downloads)
 
-# Configurações do Chrome
+# ConfiguraÃ§Ãµes do Chrome
 chrome_options = Options()
 chrome_options.add_argument("--start-maximized")  # Maximiza a janela do navegador
 
@@ -41,11 +41,11 @@ chrome_options.add_argument("--start-maximized")  # Maximiza a janela do navegad
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 # Acessa a URL
-url = "https://metabase.cloudint.nexxera.com/question#eyJkYXRhc2V0X3F1ZXJ5Ijp7InR5cGUiOiJxdWVyeSIsInF1ZXJ5Ijp7InNvdXJjZS10YWJsZSI6NDI2NSwiZmlsdGVyIjpbImFuZCIsWyJ0aW1lLWludGVydmFsIixbImZpZWxkIiw2NDU1MyxudWxsXSwzMDAsImRheSJdLFsiPSIsWyJmaWVsZCIsNjQ1NTEsbnVsbF0sIlMiXSxbIj0iLFsiZmllbGQiLDY0NTU1LG51bGxdLCJOIl1dfSwiZGF0YWJhc2UiOjh9LCJkaXNwbGF5IjoidGFibGUiLCJ2aXN1YWxpemF0aW9uX3NldHRpbmdzIjp7fX0="
+url = "https://metabase.cloudint.nexxera.com/question/1509-bilhetagem"
 driver.get(url)
 
-# Aguarda alguns segundos para a página carregar
-time.sleep(5)  # Ajuste o tempo conforme necessário
+# Aguarda alguns segundos para a pÃ¡gina carregar
+time.sleep(5)  # Ajuste o tempo conforme necessÃ¡rio
 
 # Preenche o campo de e-mail
 email_xpath = "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[1]/div[2]/input"
@@ -57,16 +57,16 @@ senha_xpath = "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div
 senha_field = driver.find_element(By.XPATH, senha_xpath)
 senha_field.send_keys("Joaopaulo@2025")
 
-# Clica no botão de login
+# Clica no botÃ£o de login
 botao_login_xpath = "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/button/div/div"
 botao_login = driver.find_element(By.XPATH, botao_login_xpath)
 botao_login.click()
 
-# Aguarda alguns segundos para a página de destino carregar
-time.sleep(10)  # Ajuste o tempo conforme necessário
+# Aguarda alguns segundos para a pÃ¡gina de destino carregar
+time.sleep(10)  # Ajuste o tempo conforme necessÃ¡rio
 
-# Clica no elemento com o XPath fornecido
-click_nuvem = "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[2]/a"
+# Clica no Ã­cone da "nuvem"
+click_nuvem = "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[3]/a"
 elemento = driver.find_element(By.XPATH, click_nuvem)
 elemento.click()
 time.sleep(10)

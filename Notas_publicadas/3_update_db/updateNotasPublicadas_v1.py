@@ -23,14 +23,15 @@ job_config = bigquery.LoadJobConfig(
     skip_leading_rows=1,  # Pula a primeira linha (cabeçalho)
     write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,  # Apaga a tabela existente e cria uma nova
     schema=[
-        bigquery.SchemaField("id_nota", "STRING"),
-        bigquery.SchemaField("sacado", "STRING"),
-        bigquery.SchemaField("vl_documento", "FLOAT64"),
-        bigquery.SchemaField("dt_inclusao", "DATE"),
-        bigquery.SchemaField("cedente", "STRING"),
-        bigquery.SchemaField("cnpj_cedente", "NUMERIC"),
+        bigquery.SchemaField("ds_razaosocial_forn", "STRING"),
         bigquery.SchemaField("dt_vcto", "DATE"),
+        bigquery.SchemaField("nu_nf", "STRING"),
+        bigquery.SchemaField("nu_cpfcnpj_comp", "NUMERIC"),
+        bigquery.SchemaField("dt_inclusao", "DATE"),
         bigquery.SchemaField("dt_emissao", "DATE"),
+        bigquery.SchemaField("nu_cpfcnpj_forn", "NUMERIC"),
+        bigquery.SchemaField("vl_documento", "FLOAT64"),
+        bigquery.SchemaField("ds_razaosocial_comp", "STRING"),
     ],
     field_delimiter=";",  # Especifica o delimitador (ajuste conforme necessário)
 )

@@ -6,9 +6,9 @@ from google.oauth2 import service_account
 # Configurações
 project_id = 'meta-vc-contabil'
 source_dataset_id = 'marketing_db'
-table_name = 'notas_publicadas'
+table_name = 'bilhetagem'
 json_key_path = r"C:\Users\geraldo.junior\DEV\Database_mkt\credenciais\big_query_key_geraldo-junior.json"
-local_csv_path = r"C:\Users\geraldo.junior\Downloads\notas_limpas.csv"
+local_csv_path = r"C:\Users\geraldo.junior\Downloads\bilhetagem_limpa.csv"
 
 # Autenticação com a chave JSON
 credentials = service_account.Credentials.from_service_account_file(json_key_path)
@@ -23,14 +23,13 @@ job_config = bigquery.LoadJobConfig(
     skip_leading_rows=1,  # Pula a primeira linha (cabeçalho)
     write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,  # Apaga a tabela existente e cria uma nova
     schema=[
-        bigquery.SchemaField("id_nota", "STRING"),
-        bigquery.SchemaField("sacado", "STRING"),
-        bigquery.SchemaField("vl_documento", "FLOAT64"),
-        bigquery.SchemaField("dt_inclusao", "DATE"),
-        bigquery.SchemaField("cedente", "STRING"),
-        bigquery.SchemaField("cnpj_cedente", "NUMERIC"),
-        bigquery.SchemaField("dt_vcto", "DATE"),
-        bigquery.SchemaField("dt_emissao", "DATE"),
+        bigquery.SchemaField("cd_antecipa", "INT64"),
+        bigquery.SchemaField("dt_operacao", "DATE"),
+        bigquery.SchemaField("nu_cnpj_forn", "NUMERIC"),
+        bigquery.SchemaField("vl_operacao", "FLOAT64"),
+        bigquery.SchemaField("ancora", "STRING"),
+        bigquery.SchemaField("fornecedor", "STRING"),
+        bigquery.SchemaField("banco", "STRING"),
     ],
     field_delimiter=";",  # Especifica o delimitador (ajuste conforme necessário)
 )
@@ -52,6 +51,6 @@ if job.state == "DONE":
         print(f"Erro ao carregar o arquivo CSV: {job.errors}")
     else:
         print(f"Arquivo CSV carregado com sucesso para a tabela {table_ref}.")
-        print(f"Total de linhas carregadas: {job.output_rows} (Notas Publicadas)")
+        print(f"Total de linhas carregadas: {job.output_rows} (Bilhetagem)")
 else:
     print(f"O job não foi concluído. Estado atual: {job.state}")
