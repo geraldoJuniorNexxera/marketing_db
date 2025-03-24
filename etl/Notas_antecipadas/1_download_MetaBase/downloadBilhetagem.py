@@ -5,8 +5,6 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.firefox import GeckoDriverManager
 
 def limpar_pasta(caminho):
@@ -20,78 +18,67 @@ def limpar_pasta(caminho):
                 elif os.path.isdir(caminho_arquivo):
                     shutil.rmtree(caminho_arquivo)
             except Exception as e:
-                print(f"[ERRO] Erro ao deletar {caminho_arquivo}. Razao: {e}")
+                print(f"[ERRO] Erro ao deletar {caminho_arquivo}. Razo: {e}")
     else:
         print(f"[AVISO] O caminho {caminho} nao existe.")
 
 def arquivo_foi_baixado(caminho_downloads, extensao=".csv"):
+    # Verifica se existe arquivo com a extensao esperada (ignorando letras maiusculas e arquivos temporarios)
     for arquivo in os.listdir(caminho_downloads):
-        if arquivo.endswith(extensao):
+        if arquivo.lower().endswith(extensao.lower()) and not arquivo.endswith(".part"):
             return True
     return False
 
 caminho_downloads = "/home/geraldo.junior/Database_mkt/etl/Downloads"
 limpar_pasta(caminho_downloads)
 
-# Configurando o Firefox para execução em modo headless
-print("[INFO] Configurando o Firefox para execucao em modo headless...")
+# Configurando o Firefox para execucao em modo headless e download automatico
+print("[INFO] Configurando o Firefox para execucao em modo headless e download automatico...")
 firefox_options = Options()
 firefox_options.headless = True
+firefox_options.set_preference("browser.download.folderList", 2)  # Pasta customizada
+firefox_options.set_preference("browser.download.dir", caminho_downloads)
+firefox_options.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
+firefox_options.set_preference("pdfjs.disabled", True)
 
-# Configurando o perfil do Firefox para downloads automáticos
-print("[INFO] Configurando o perfil do Firefox para downloads automaticos...")
-profile = webdriver.FirefoxProfile()
-profile.set_preference("browser.download.folderList", 2)  # Pasta customizada
-profile.set_preference("browser.download.dir", caminho_downloads)
-# Corrigido o MIME type para CSV, alinhando com a verificação de extensão
-profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
-profile.set_preference("pdfjs.disabled", True)
-profile.update_preferences()
-
-# Inicializando o driver do Firefox
+# Inicializando o driver do Firefox (para Selenium < 4)
 print("[INFO] Inicializando o driver do Firefox...")
-driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),
-                           firefox_profile=profile,
-                           options=firefox_options)
+driver = webdriver.Firefox(
+    executable_path=GeckoDriverManager().install(),
+    firefox_options=firefox_options
+)
 print("[INFO] Driver inicializado com sucesso!")
 
-# Navegação e login
+# Navegacao e login
 print("[INFO] Acessando a pagina do Metabase...")
 driver.get("https://metabase.cloudint.nexxera.com/question/1509-bilhetagem")
-
-# Utilizando explicit wait para aguardar o carregamento do campo de email
-wait = WebDriverWait(driver, 20)
-email_input = wait.until(EC.presence_of_element_located(
-    (By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[1]/div[2]/input")
-))
+time.sleep(5)
 
 print("[INFO] Preenchendo os dados de login...")
-email_input.send_keys("geraldo.junior@nexxera.com")
-senha_input = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[2]/div[2]/input")
-senha_input.send_keys("Joaopaulo@2025")
+driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[1]/div[2]/input")\
+      .send_keys("geraldo.junior@nexxera.com")
+driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[2]/div[2]/input")\
+      .send_keys("Joaopaulo@2025")
 print("[INFO] Clicando no botao de login...")
-driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/button/div/div").click()
+driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/button/div/div")\
+      .click()
 
-# Aguardando que o login seja processado e que o próximo elemento esteja disponível
-wait.until(EC.presence_of_element_located(
-    (By.XPATH, "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[3]/a")
-))
+print("[INFO] Aguardando 10 segundos para o login processar...")
+time.sleep(10)
 
 print("[INFO] Navegando para a pagina de download...")
-driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[3]/a").click()
-
-# Aguarda que o botão de download esteja clicável
-wait.until(EC.element_to_be_clickable(
-    (By.XPATH, "/html/body/span/span/div/div/div[3]/div[1]/div/form/button")
-))
+driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[3]/a")\
+      .click()
+time.sleep(10)
 
 print("[INFO] Clicando no botao de download...")
-driver.find_element(By.XPATH, "/html/body/span/span/div/div/div[3]/div[1]/div/form/button").click()
+driver.find_element(By.XPATH, "/html/body/span/span/div/div/div[3]/div[1]/div/form/button")\
+      .click()
 
 print("[INFO] Aguardando o download do arquivo...")
 while not arquivo_foi_baixado(caminho_downloads):
-    print("[INFO] Arquivo ainda nao baixado, aguardando 1 minuto...")
-    time.sleep(60)
+    print("[INFO] Arquivo ainda nao baixado, aguardando 1 segundo...")
+    time.sleep(1)
 
 print("[INFO] Arquivo baixado com sucesso!")
 driver.quit()

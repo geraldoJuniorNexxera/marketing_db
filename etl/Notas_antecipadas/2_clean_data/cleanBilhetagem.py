@@ -18,16 +18,16 @@ colunas_mantidas = [
     "dt_operacao", 
     "nu_cnpj_forn", 
     "vl_operacao", 
-    "hubly_mercantil_cad_emp ? ds_emp", 
-    "hubly_mercantil_cad_emp_2 ? ds_emp", 
-    "hubly_mercantil_cad_emp_3 ? ds_emp"
+    "hubly_mercantil_cad_emp â†’ ds_emp", 
+    "hubly_mercantil_cad_emp_2 â†’ ds_emp", 
+    "hubly_mercantil_cad_emp_3 â†’ ds_emp"
 ]
 
 # Mapeamento dos nomes das colunas para os novos nomes
 mapeamento_colunas = {
-    "hubly_mercantil_cad_emp ? ds_emp": "ancora",
-    "hubly_mercantil_cad_emp_2 ? ds_emp": "fornecedor",
-    "hubly_mercantil_cad_emp_3 ? ds_emp": "banco"
+    "hubly_mercantil_cad_emp â†’ ds_emp": "ancora",
+    "hubly_mercantil_cad_emp_2 â†’ ds_emp": "fornecedor",
+    "hubly_mercantil_cad_emp_3 â†’ ds_emp": "banco"
 }
 
 # Função para formatar datas no formato YYYY-MM-DD
@@ -105,7 +105,7 @@ except Exception as e:
 # Limpar os dados
 dados_limpos = limpar_csv(dados, colunas_mantidas)
 
-# Renomear as colunas ao salvar o arquivo CSV
+# Renomear as colunas ao salvar o arquivo CSV. 
 colunas_renomeadas = [mapeamento_colunas.get(coluna, coluna) for coluna in colunas_mantidas]
 
 # Salvar o novo arquivo CSV com delimitador ';'
