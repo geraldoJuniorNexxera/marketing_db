@@ -42,6 +42,7 @@ pkill -f updateMarketingDb.py
 
 - Rodar script fingindo que tem dusplay: 
     xvfb-run -a python downloadBilhetagem.py
+    xvfb-run -a python downloadNotasPublicadas.py
 
 
 
