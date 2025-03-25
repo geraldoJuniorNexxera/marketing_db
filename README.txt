@@ -34,7 +34,15 @@ pkill -f updateMarketingDb.py
 
 ############### Acessar geraldo.junior/Database_mkt (via ETL) ###############
 
+- Mudar para usuário
+    ssh geraldo.junior@flnetl001prd
 
-ssh geraldo.junior@flnetl001prd
+- Mudar para env
+    source /home/geraldo.junior/venv-new/bin/activate
+
+- Rodar script fingindo que tem dusplay: 
+    xvfb-run -a python downloadBilhetagem.py
+
+
 
 

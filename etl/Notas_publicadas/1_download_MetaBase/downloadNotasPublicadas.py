@@ -1,14 +1,14 @@
+# -*- coding: utf-8 -*-
 import os
-import shutil
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-import time
 
-# Função para limpar a pasta de downloads
 def limpar_pasta(caminho):
+    print(f"[INFO] Limpando pasta de downloads: {caminho}")
     if os.path.exists(caminho):
         for arquivo in os.listdir(caminho):
             caminho_arquivo = os.path.join(caminho, arquivo)
@@ -18,69 +18,78 @@ def limpar_pasta(caminho):
                 elif os.path.isdir(caminho_arquivo):
                     shutil.rmtree(caminho_arquivo)
             except Exception as e:
-                print(f"Erro ao deletar {caminho_arquivo}. Razão: {e}")
+                print(f"[ERRO] Erro ao deletar {caminho_arquivo}. Razo: {e}")
     else:
-        print(f"O caminho {caminho} não existe.")
+        print(f"[AVISO] O caminho {caminho} nao existe.")
 
-# Função para verificar se o arquivo foi baixado
-def arquivo_foi_baixado(caminho_downloads, extensao=".xlsx"):
+def arquivo_foi_baixado(caminho_downloads, extensao=".csv"):
     for arquivo in os.listdir(caminho_downloads):
-        if arquivo.endswith(extensao):
+        if arquivo.lower().endswith(extensao.lower()) and not arquivo.endswith(".part"):
             return True
     return False
 
-# Limpa a pasta de downloads antes de iniciar o código
-caminho_downloads = r"C:\Users\geraldo.junior\Downloads"
+# Caminhos personalizados
+chrome_binary = "/home/geraldo.junior/chrome/opt/google/chrome/google-chrome"
+lib_path = "/home/geraldo.junior/libs/usr/lib64"
+caminho_downloads = "/home/geraldo.junior/Database_mkt/etl/Downloads"
+
 limpar_pasta(caminho_downloads)
 
-# Configurações do Chrome
-chrome_options = Options()
-chrome_options.add_argument("--start-maximized")  # Maximiza a janela do navegador
+# Configurando Chrome headless
+print("[INFO] Configurando o Chrome para execucao headless e download automatico...")
+options = Options()
+options.binary_location = chrome_binary
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
 
-# Inicializa o WebDriver usando o webdriver-manager
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+# Download sem prompt
+prefs = {
+    "download.default_directory": caminho_downloads,
+    "download.prompt_for_download": False,
+    "download.directory_upgrade": True,
+    "safebrowsing.enabled": True
+}
+options.add_experimental_option("prefs", prefs)
 
-# Acessa a URL
-url = "https://metabase.cloudint.nexxera.com/question#eyJkYXRhc2V0X3F1ZXJ5Ijp7ImRhdGFiYXNlIjo4LCJxdWVyeSI6eyJzb3VyY2UtdGFibGUiOjM4MzUsImZpbHRlciI6WyJhbmQiLFsiPSIsWyJmaWVsZCIsNTkyMTMsbnVsbF0sIlMiXSxbInRpbWUtaW50ZXJ2YWwiLFsiZmllbGQiLDU5MjI4LG51bGxdLDMwMCwiZGF5Il0sWyI9IixbImZpZWxkIiw1OTIzNCxudWxsXSwiTiJdXX0sInR5cGUiOiJxdWVyeSJ9LCJkaXNwbGF5IjoidGFibGUiLCJ2aXN1YWxpemF0aW9uX3NldHRpbmdzIjp7fX0="
-driver.get(url)
+# Inicializando o ChromeDriver
+print("[INFO] Inicializando o ChromeDriver...")
+service = Service(ChromeDriverManager().install())
+env = os.environ.copy()
+env["LD_LIBRARY_PATH"] = lib_path
 
-# Aguarda alguns segundos para a página carregar
-time.sleep(5)  # Ajuste o tempo conforme necessário
+driver = webdriver.Chrome(service=service, options=options)
 
-# Preenche o campo de e-mail
-email_xpath = "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[1]/div[2]/input"
-email_field = driver.find_element(By.XPATH, email_xpath)
-email_field.send_keys("geraldo.junior@nexxera.com")
+# Acesso ao Metabase
+print("[INFO] Acessando a pagina do Metabase...")
+driver.get("https://metabase.cloudint.nexxera.com/question/1509-bilhetagem")
+time.sleep(5)
 
-# Preenche o campo de senha
-senha_xpath = "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[2]/div[2]/input"
-senha_field = driver.find_element(By.XPATH, senha_xpath)
-senha_field.send_keys("Joaopaulo@2025")
+print("[INFO] Realizando login...")
+driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[1]/div[2]/input")\
+    .send_keys("geraldo.junior@nexxera.com")
+driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[2]/div[2]/input")\
+    .send_keys("Joaopaulo@2025")
+driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/button/div/div")\
+    .click()
 
-# Clica no botão de login
-botao_login_xpath = "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/button/div/div"
-botao_login = driver.find_element(By.XPATH, botao_login_xpath)
-botao_login.click()
-
-# Aguarda alguns segundos para a página de destino carregar
-time.sleep(10)  # Ajuste o tempo conforme necessário
-
-# Clica no elemento com o XPath fornecido
-click_nuvem = "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[2]/a"
-elemento = driver.find_element(By.XPATH, click_nuvem)
-elemento.click()
 time.sleep(10)
 
-# Clica para baixar arquivo .xlsx
-download_xlsx = "/html/body/span/span/div/div/div[3]/div[2]/div/form/button"
-elemento = driver.find_element(By.XPATH, download_xlsx)
-elemento.click()
+print("[INFO] Navegando para a aba de download...")
+driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[3]/a")\
+    .click()
+time.sleep(10)
 
-# Aguarda o arquivo ser baixado
+print("[INFO] Clicando no botao de download...")
+driver.find_element(By.XPATH, "/html/body/span/span/div/div/div[3]/div[1]/div/form/button")\
+    .click()
+
+print("[INFO] Aguardando o download...")
 while not arquivo_foi_baixado(caminho_downloads):
-    time.sleep(1)  # Verifica a cada segundo
+    print("[INFO] Ainda aguardando... tentando novamente em 60 segundos.")
+    time.sleep(60)
 
-print("Arquivo baixado com sucesso!")
-
-# Fecha o navegador
+print("[INFO] Arquivo baixado com sucesso!")
 driver.quit()
+print("[INFO] Execucao finalizada!")
