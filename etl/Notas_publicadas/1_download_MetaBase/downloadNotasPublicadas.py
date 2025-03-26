@@ -9,7 +9,7 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# Define variavel para ignorar proxy local.
+# Define variavel para ignorar proxy local
 os.environ["NO_PROXY"] = "localhost,127.0.0.1,localhost.nexxera.com"
 
 def limpar_pasta(caminho):
@@ -88,7 +88,7 @@ time.sleep(10)
 
 # Clica no botao de download
 print("[INFO] Clicando no botao de download...")
-botao_download = WebDriverWait(driver, 60).until(
+botao_download = WebDriverWait(driver, 20).until(
     EC.presence_of_element_located((By.XPATH, "/html/body/span/span/div/div/div[3]/div[1]/div/form/button"))
 )
 driver.execute_script("arguments[0].scrollIntoView(true);", botao_download)

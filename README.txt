@@ -45,5 +45,12 @@ pkill -f updateMarketingDb.py
     xvfb-run -a python downloadNotasPublicadas.py
 
 
+- Rodar o script elt/updateMarketingDb_etl.py continuamente
+    nohup python /home/geraldo.junior/Database_mkt/etl/updateMarketingDb_etl.py > log_etl.out 2>&1 &
+
+- Para o script elt/updateMarketingDb_etl.py
+    ps aux | grep updateMarketingDb_etl.py
+    geraldo+ 12345  0.1  ... python /home/geraldo.junior/Database_mkt/etl/updateMarketingDb_etl.py
+
 
 

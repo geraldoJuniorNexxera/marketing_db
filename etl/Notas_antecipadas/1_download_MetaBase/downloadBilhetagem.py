@@ -77,7 +77,7 @@ time.sleep(10)
 
 # Espera o link da pagina de download aparecer e clica com JS
 print("[INFO] Aguardando elemento da pagina de download ficar disponivel...")
-elemento = WebDriverWait(driver, 60).until(
+elemento = WebDriverWait(driver, 20).until(
     EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[3]/a"))
 )
 driver.execute_script("arguments[0].scrollIntoView(true);", elemento)
@@ -88,7 +88,7 @@ time.sleep(10)
 
 # Clica no botao de download
 print("[INFO] Clicando no botao de download...")
-botao_download = WebDriverWait(driver, 60).until(
+botao_download = WebDriverWait(driver, 20).until(
     EC.presence_of_element_located((By.XPATH, "/html/body/span/span/div/div/div[3]/div[1]/div/form/button"))
 )
 driver.execute_script("arguments[0].scrollIntoView(true);", botao_download)

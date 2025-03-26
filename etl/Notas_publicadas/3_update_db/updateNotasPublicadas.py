@@ -1,16 +1,18 @@
+# -*- coding: utf-8 -*-
+
 import time
 from tqdm import tqdm
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-# Configurações
+# Configuracoes
 project_id = 'meta-vc-contabil'
-source_dataset_id = 'marketing_db'
+source_dataset_id = 'marketing_db_etl'
 table_name = 'notas_publicadas'
-json_key_path = r"C:\Users\geraldo.junior\DEV\Database_mkt\credenciais\big_query_key_geraldo-junior.json"
-local_csv_path = r"C:\Users\geraldo.junior\Downloads\notas_limpas.csv"
+json_key_path = r"/home/geraldo.junior/Database_mkt/credenciais/big_query_key_geraldo-junior.json"
+local_csv_path = r"/home/geraldo.junior/Database_mkt/etl/Downloads/notas_limpas.csv"
 
-# Autenticação com a chave JSON
+# Autenticacao com a chave JSON
 credentials = service_account.Credentials.from_service_account_file(json_key_path)
 client = bigquery.Client(credentials=credentials, project=project_id)
 
@@ -20,8 +22,8 @@ table_ref = f"{project_id}.{source_dataset_id}.{table_name}"
 # Configura o job de carregamento
 job_config = bigquery.LoadJobConfig(
     source_format=bigquery.SourceFormat.CSV,
-    skip_leading_rows=1,  # Pula a primeira linha (cabeçalho)
-    write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,  # Apaga a tabela existente e cria uma nova
+    skip_leading_rows=1,  # Pula a primeira linha (cabecalho)
+    write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
     schema=[
         bigquery.SchemaField("id_nota", "STRING"),
         bigquery.SchemaField("sacado", "STRING"),
@@ -32,7 +34,8 @@ job_config = bigquery.LoadJobConfig(
         bigquery.SchemaField("dt_vcto", "DATE"),
         bigquery.SchemaField("dt_emissao", "DATE"),
     ],
-    field_delimiter=";",  # Especifica o delimitador (ajuste conforme necessário)
+    field_delimiter=";",        # delimitador
+    encoding="ISO-8859-1",      # <-- Forca a leitura em ISO-8859-1
 )
 
 # Carrega o arquivo CSV para o BigQuery
@@ -44,7 +47,7 @@ with open(local_csv_path, "rb") as source_file:
         while job.state != 'DONE':
             time.sleep(5)
             job.reload()
-            pbar.update(10)  # Atualiza a barra de progresso (ajuste conforme necessário)
+            pbar.update(10)
 
 # Verifica se o carregamento foi bem-sucedido
 if job.state == "DONE":
@@ -52,6 +55,6 @@ if job.state == "DONE":
         print(f"Erro ao carregar o arquivo CSV: {job.errors}")
     else:
         print(f"Arquivo CSV carregado com sucesso para a tabela {table_ref}.")
-        print(f"Total de linhas carregadas: {job.output_rows} (Notas Publicadas)")
+        print(f"Total de linhas carregadas: {job.output_rows} (Bilhetagem)")
 else:
-    print(f"O job não foi concluído. Estado atual: {job.state}")
+    print(f"O job nao foi concluido. Estado atual: {job.state}")
