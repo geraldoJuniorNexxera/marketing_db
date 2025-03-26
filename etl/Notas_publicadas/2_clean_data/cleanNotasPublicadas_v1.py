@@ -4,11 +4,12 @@ import os
 import csv
 from datetime import datetime
 import warnings
+from openpyxl import load_workbook
 
-# Suprimir avisos
-warnings.filterwarnings('ignore')
+# Suprimir avisos do openpyxl
+warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 
-# Caminho da pasta onde os arquivos .csv estao localizados
+# Caminho da pasta onde os arquivos .xlsx estao localizados
 pasta_downloads = r"/home/geraldo.junior/Database_mkt/etl/Downloads"
 
 # Caminho do arquivo CSV de saida
@@ -68,22 +69,27 @@ def limpar_csv(data, colunas_mantidas):
         dados_limpos.append(item_limpo)
     return dados_limpos
 
-# Listar arquivos .csv
-arquivos_csv = [arq for arq in os.listdir(pasta_downloads) if arq.endswith('.csv')]
-if not arquivos_csv:
-    print("Nenhum arquivo .csv encontrado.")
+# Listar arquivos .xlsx
+arquivos_xlsx = [arq for arq in os.listdir(pasta_downloads) if arq.endswith('.xlsx')]
+if not arquivos_xlsx:
+    print("Nenhum arquivo .xlsx encontrado.")
     exit()
 
 # Carrega o primeiro arquivo
-input_file_path = os.path.join(pasta_downloads, arquivos_csv[0])
+input_file_path = os.path.join(pasta_downloads, arquivos_xlsx[0])
 
-# Leitura do CSV com delimitador ','
+# Leitura do Excel com openpyxl
 try:
-    with open(input_file_path, 'r', encoding='utf-8') as f:
-        reader = csv.DictReader(f, delimiter=',')
-        dados = [row for row in reader]
+    wb = load_workbook(input_file_path, data_only=True)
+    ws = wb.active
+    headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
+    dados = []
+
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        item = dict(zip(headers, row))
+        dados.append(item)
 except Exception as e:
-    print(f"Erro ao ler o arquivo CSV: {e}")
+    print(f"Erro ao ler o arquivo Excel: {e}")
     exit()
 
 # Limpar os dados
