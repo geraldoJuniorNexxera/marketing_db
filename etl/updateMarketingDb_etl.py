@@ -57,8 +57,7 @@ schedule.every().day.at("08:00").do(run_all_scripts)
 schedule.every().day.at("10:00").do(run_all_scripts)
 schedule.every().day.at("12:00").do(run_all_scripts)
 schedule.every().day.at("15:00").do(run_all_scripts)
-
-
+schedule.every().day.at("19:00").do(run_all_scripts)
 
 # Loop para manter o script rodando e verificar o agendamento
 while True:
