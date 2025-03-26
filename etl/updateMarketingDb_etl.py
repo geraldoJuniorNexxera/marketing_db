@@ -50,7 +50,7 @@ def run_ipynb_notebook(notebook_path):
 def run_all_scripts():
     for script in tqdm(scripts, desc="Executando scripts", unit="script"):
         run_ipynb_notebook(script) if script.endswith('.ipynb') else run_python_script(script)
-    print("Tarefas concluidas: Atualizado tabelas 'notas_publicadas' e 'bilhetagem' e criado Backup do marketing_db.")
+    print("Tarefas concluidas: Atualizado tabelas 'notas_publicadas' e 'bilhetagem'.")
 
 # Agenda a execucao da funcao principal
 schedule.every().day.at("08:00").do(run_all_scripts)

@@ -55,6 +55,6 @@ if job.state == "DONE":
         print(f"Erro ao carregar o arquivo CSV: {job.errors}")
     else:
         print(f"Arquivo CSV carregado com sucesso para a tabela {table_ref}.")
-        print(f"Total de linhas carregadas: {job.output_rows} (Bilhetagem)")
+        print(f"Total de linhas carregadas: {job.output_rows} (Notas Publicadas)")
 else:
     print(f"O job nao foi concluido. Estado atual: {job.state}")
