@@ -51,7 +51,7 @@ def run_all_scripts():
     print("Tarefas concluídas: Atualizado tabelas 'notas_publicadas' e 'bilhetagem' e criado Backup do marketing_db.")
 
 # Agenda a execução da função principal
-schedule.every().day.at("08:06").do(run_all_scripts)
+schedule.every().day.at("08:14").do(run_all_scripts)
 schedule.every().day.at("13:01").do(run_all_scripts)
 
 # Loop para manter o script rodando e verificar o agendamento
