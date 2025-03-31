@@ -1,12 +1,29 @@
+import os
+import shutil
 import csv
 from google.cloud import bigquery
 from google.oauth2 import service_account
+
+# Diretorio que sera limpo
+result_dir = "/home/geraldo.junior/Database_mkt/etl/Atualiza_cnae/resultado"
+
+# Limpa o diretorio: remove todos os arquivos e subpastas
+if os.path.exists(result_dir):
+    for filename in os.listdir(result_dir):
+        file_path = os.path.join(result_dir, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)  # Remove arquivo ou link simbolico
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # Remove subpasta
+        except Exception as e:
+            print(f"Nao foi possivel remover {file_path}. Motivo: {e}")
 
 # Caminho da chave de autenticacao do BigQuery
 json_key_path = r"/home/geraldo.junior/Database_mkt/credenciais/big_query_key_geraldo-junior.json"
 
 # Caminho de saida do arquivo CSV
-output_csv_path = "/home/geraldo.junior/Database_mkt/etl/Atualiza_cnae/resultado/Lista_de_cnpj.csv"
+output_csv_path = os.path.join(result_dir, "Lista_de_cnpj.csv")
 
 # Criacao das credenciais com a chave de servico
 credentials = service_account.Credentials.from_service_account_file(json_key_path)
