@@ -67,7 +67,7 @@ print("[INFO] Preenchendo os dados de login...")
 driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[1]/div[2]/input")\
       .send_keys("geraldo.junior@nexxera.com")
 driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[2]/div[2]/input")\
-      .send_keys("Joaopaulo@2025")
+      .send_keys("Sensebike@2025")
 print("[INFO] Clicando no botao de login...")
 driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/button/div/div")\
       .click()
