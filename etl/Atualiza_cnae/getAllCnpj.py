@@ -41,7 +41,7 @@ FROM (
   UNION ALL
   SELECT cnpj FROM `meta-vc-contabil.marketing_db.Meta_Contabil`
   UNION ALL
-  SELECT cnpj_cedente FROM `meta-vc-contabil.marketing_db.notas_publicadas`
+  SELECT cnpj_cedente FROM `meta-vc-contabil.marketing_db_etl.notas_publicadas`
   UNION ALL
   SELECT CUSTOMER_DOCUMENT FROM `meta-vc-contabil.marketing_db.Base_minha_nexx`
 ) AS all_cnpj
