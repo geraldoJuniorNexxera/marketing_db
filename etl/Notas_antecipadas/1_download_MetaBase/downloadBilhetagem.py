@@ -8,6 +8,11 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from dotenv import load_dotenv
+
+# Define o caminho completo para o arquivo .env
+dotenv_path = r"/home/geraldo.junior/Database_mkt/credenciais/.env"
+load_dotenv(dotenv_path=dotenv_path)
 
 # Define variavel para ignorar proxy local
 os.environ["NO_PROXY"] = "localhost,127.0.0.1,localhost.nexxera.com"
@@ -33,15 +38,20 @@ def arquivo_foi_baixado(caminho_downloads, extensao=".csv"):
             return True
     return False
 
+# Carrega as credenciais do arquivo .env
+EMAIL = os.environ.get("EMAIL")
+SENHA = os.environ.get("SENHA")
+if not EMAIL or not SENHA:
+    raise ValueError("Credenciais nao encontradas no arquivo .env. Verifique as variaveis EMAIL e SENHA.")
+
 # Caminho da pasta de downloads
-caminho_downloads = "/home/geraldo.junior/Database_mkt/etl/Downloads"
+caminho_downloads = r"/home/geraldo.junior/Database_mkt/etl/Downloads"
 limpar_pasta(caminho_downloads)
 
 # Configuracao do Firefox
 print("[INFO] Configurando o Firefox para execucao em modo headless e download automatico...")
 firefox_options = Options()
 firefox_options.headless = True
-firefox_options.binary_location = "/usr/bin/firefox"
 firefox_options.set_preference("browser.download.folderList", 2)
 firefox_options.set_preference("browser.download.dir", caminho_downloads)
 firefox_options.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
@@ -49,7 +59,7 @@ firefox_options.set_preference("pdfjs.disabled", True)
 firefox_options.set_preference("network.proxy.type", 0)
 firefox_options.set_preference("network.proxy.no_proxies_on", "localhost,127.0.0.1,localhost.nexxera.com")
 
-# Caminho do geckodriver manual
+# Caminho do geckodriver
 service = Service("/home/geraldo.junior/geckdriver/geckodriver")
 
 # Inicializa o navegador
@@ -62,12 +72,12 @@ print("[INFO] Acessando a pagina do Metabase...")
 driver.get("https://metabase.cloudint.nexxera.com/question/1509-bilhetagem")
 time.sleep(5)
 
-# Preenche login
+# Preenche login com as credenciais carregadas do .env
 print("[INFO] Preenchendo os dados de login...")
 driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[1]/div[2]/input")\
-      .send_keys("geraldo.junior@nexxera.com")
+      .send_keys(EMAIL)
 driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/div[2]/div[2]/input")\
-      .send_keys("Sensebike@2025")
+      .send_keys(SENHA)
 print("[INFO] Clicando no botao de login...")
 driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div[2]/div/form/button/div/div")\
       .click()
@@ -75,9 +85,9 @@ driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/div/div[2]/div/div
 print("[INFO] Aguardando 10 segundos para o login processar...")
 time.sleep(10)
 
-# Espera o link da pagina de download aparecer e clica com JS
+# Espera o link da pagina de download aparecer e clica com JavaScript
 print("[INFO] Aguardando elemento da pagina de download ficar disponivel...")
-elemento = WebDriverWait(driver, 20).until(
+elemento = WebDriverWait(driver, 60).until(
     EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/main/div/div/div[2]/main/div[2]/div/div[3]/a"))
 )
 driver.execute_script("arguments[0].scrollIntoView(true);", elemento)
@@ -88,7 +98,7 @@ time.sleep(10)
 
 # Clica no botao de download
 print("[INFO] Clicando no botao de download...")
-botao_download = WebDriverWait(driver, 20).until(
+botao_download = WebDriverWait(driver, 60).until(
     EC.presence_of_element_located((By.XPATH, "/html/body/span/span/div/div/div[3]/div[1]/div/form/button"))
 )
 driver.execute_script("arguments[0].scrollIntoView(true);", botao_download)
